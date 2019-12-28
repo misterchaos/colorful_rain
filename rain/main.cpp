@@ -1,5 +1,5 @@
 #include "rain.h"
-int screenX=1200, screenY=800, vX = 0, vY = 10, rainSpeed=1, rainDropNumber=1;
+int screenX=1200, screenY=800, vX = 0, vY = 10, rainSpeed=1, rainDropNumber=0;
 volatile int stop = 1;
 rainDrop *head;
 std::mutex g_mutex;
@@ -173,6 +173,7 @@ void ChangeNumber(int number) {
 
 
 
+
 void KeyBoardListener()
 {
 
@@ -186,19 +187,27 @@ void KeyBoardListener()
 			{
 			case UP:
 			//	cout << "up" << endl;
-				rainSpeed ++;
+				if (rainSpeed < 10) {
+					rainSpeed++;
+				}
 				break;
 			case DOWN:
 			//	cout << "down" << endl;
-				rainSpeed --;
+				if (rainSpeed > 1) {
+					rainSpeed--;
+				}
 				break;
 			case RIGHT:
 			//	cout << "right" << endl;
-				vX ++;
+				if (vX < 14) {
+					vX++;
+				}
 				break;
 			case LEFT:
 			//	cout << "left" << endl;
-				vX --;
+				if (vX > -14) {
+					vX--;
+				}
 				break;
 			case ENTER:
 			//	cout << "stop" << endl;
@@ -210,12 +219,14 @@ void KeyBoardListener()
 				break;
 			case PLUS:
 			//	cout << "plus" << endl;
-				rainDropNumber++;
+				if (rainDropNumber < 400) {
+					rainDropNumber++;
+				}
 				ChangeNumber(rainDropNumber);
 				break;
 			case SUB:
 			//	cout << "sub" << endl;
-				if (rainDropNumber>1) {
+				if (rainDropNumber>0) {
 				    rainDropNumber--;
 				}
 				break;

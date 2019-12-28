@@ -44,35 +44,19 @@ typedef struct rainDrop
 	float rainLineLength;
 	int status;
 	struct rainCircle water;
-	struct rainDrop *next;
+	int id;//代表结点的序号
+	struct rainDrop *next;//结构体的指针域
+	int del;//是否将被删除
 }rainDrop;
-
-
-
-typedef struct node
-{
-	rainDrop *data;                   //数据域指针
-	struct node*next;  //指向当前结点的下一结点
-} Node;
-
-typedef struct Lqueue
-{
-	Node *front;                   //队头
-	Node *rear;                    //队尾
-	size_t length;            //队列长度
-} LQueue;
 
 enum Status { FAIL, OK };
 
-
-void InitLQueue(LQueue *Q);
-void DestoryLQueue(LQueue *Q);
-Status IsEmptyLQueue(const LQueue *Q);
-Status GetHeadLQueue(LQueue *Q, rainDrop *e);
-int LengthLQueue(LQueue *Q);
-Status EnLQueue(LQueue *Q, rainDrop *data);
-Status DeLQueue(LQueue *Q);
-void ClearLQueue(LQueue *Q);
-Status TraverseLQueue(const LQueue *Q, void(*foo)(rainDrop *q));
+void CreatList(rainDrop** ppHead);
+int Insert(rainDrop** ppHead, rainDrop* pN);
+int Clean(rainDrop** ppHead);
+int GetNumber(rainDrop *L);
+int FreeList(rainDrop* L);
+void Traverse(rainDrop* L, void(*visit)(rainDrop*));
+int Delete(rainDrop** ppHead, rainDrop* pN);
 
 

@@ -1,8 +1,7 @@
 #include "rain.h"
-int screenX=1200, screenY=800, vX = 0, vY = 10, rainSpeed=1, rainDropNumber=300;
+int screenX=1200, screenY=800, vX = 0, vY = 10, rainSpeed=1, rainDropNumber=1;
 volatile int stop = 1;
 rainDrop *head;
-LQueue Q;
 std::mutex g_mutex;
 
 void initgraphics(void)
@@ -49,7 +48,7 @@ void creatRain(void)
 	for (i = 0; i < rainDropNumber; i++)
 	{
 		p = creatDrop();
-		EnLQueue(&Q,p);
+		Insert(&head,p);
 	}
 }
 
@@ -78,8 +77,7 @@ void rainDropDown(struct rainDrop *p)
 {
 	if (p->curY >= p->endY)
 	{
-	
-		clearRainLine(p);
+	clearRainLine(p);
 		p->status = 1;
 	}
 	else
@@ -107,12 +105,19 @@ void clearRainCircle(struct rainDrop *p)
 	circle(p->water.x, p->water.y, p->water.curR);
 }
 
+
+
 void fallToWater(struct rainDrop *p)
 {
 	if (p->water.curR >= p->water.r)
 	{
 		clearRainCircle(p);
-		recreatDrop(p);
+		if (GetNumber(head)>rainDropNumber) {
+			p->del = 1;//下次将被删除
+		}
+		else {
+		    recreatDrop(p);
+		}
 	}
 	else
 	{
@@ -145,26 +150,22 @@ void visitDrop(rainDrop * p) {
 void rain(void)
 {
 	initgraphics();
+	CreatList(&head);
 	creatRain();
 	while (stop!=0)
 	{
 	    Sleep(10);
-		TraverseLQueue(&Q,&visitDrop);
+		Traverse(head,&visitDrop);
+		Clean(&head);
 	}
 	clearAll();
 }
 
-void ChangeNumber(LQueue * Q,int number) {
-	if (Q->length > number) {
-		while (Q->length>number)
-		{
-			DeLQueue(Q);
-		}
-	}
-	else if (Q->length<number) {
-		while (Q->length<number) {
+void ChangeNumber(int number) {
+    if (GetNumber(head)<number) {
+		while (GetNumber(head) <number) {
 			rainDrop *p = creatDrop();
-			EnLQueue(Q,p);
+			Insert(&head,p);
 		}
 	}
 }
@@ -180,42 +181,43 @@ void KeyBoardListener()
 		if (_kbhit()) {
 
 			int ch = _getch();
-			cout << ch <<endl;
+		//	cout << ch <<endl;
 			switch (ch)
 			{
 			case UP:
-				cout << "up" << endl;
+			//	cout << "up" << endl;
 				rainSpeed ++;
 				break;
 			case DOWN:
-				cout << "down" << endl;
+			//	cout << "down" << endl;
 				rainSpeed --;
 				break;
 			case RIGHT:
-				cout << "right" << endl;
+			//	cout << "right" << endl;
 				vX ++;
 				break;
 			case LEFT:
-				cout << "left" << endl;
+			//	cout << "left" << endl;
 				vX --;
 				break;
 			case ENTER:
-				cout << "stop" << endl;
+			//	cout << "stop" << endl;
 				stop = 0;
 				break;
 			case ESC:
-				cout << "esc" << endl;
+			//	cout << "esc" << endl;
 				stop = 0;
 				break;
 			case PLUS:
-				cout << "plus" << endl;
+			//	cout << "plus" << endl;
 				rainDropNumber++;
-				ChangeNumber(&Q,rainDropNumber);
+				ChangeNumber(rainDropNumber);
 				break;
 			case SUB:
-				cout << "sub" << endl;
-				rainDropNumber--;
-				ChangeNumber(&Q, rainDropNumber);
+			//	cout << "sub" << endl;
+				if (rainDropNumber>1) {
+				    rainDropNumber--;
+				}
 				break;
 			default:
 				break;

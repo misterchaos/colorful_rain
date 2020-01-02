@@ -126,6 +126,86 @@ void fallToWater(struct rainDrop *p)
 		drawRainCircle(p);
 	}
 }
+
+
+void thunder()
+{
+
+	
+	int x = rand() % screenX;;
+	int y =0;
+	int randY = rand() % 5;
+	int stepY = screenY / 40;
+	int stepX = screenX / 40;
+	Thunder one;
+	one.x0 = x + rand() % stepX; one.y0 = y + stepY*0;
+	one.x1 = x + rand() % stepX; one.y1 = y + stepY*1;
+	one.x2 = x + rand() % stepX; one.y2 = y + stepY*2;
+	one.x3 = x + rand() % stepX; one.y3 = y + stepY*3;
+	one.x4 = x + rand() % stepX; one.y4 = y + stepY*4;
+	one.x5 = x + rand() % stepX; one.y5 = y + stepY*5;
+	one.x6 = x + rand() % stepX; one.y6 = y + stepY*6;
+	one.x7 = x + rand() % stepX; one.y7 = y + stepY*7;
+	one.x8 = x + rand() % stepX; one.y8 = y + stepY*8;
+	one.x9 = x + rand() % stepX; one.y9 = y + stepY*9;
+	one.x10 = x + rand() % stepX; one.y10 = y + stepY * 10;
+	one.x11 = x + rand() % stepX; one.y11 = y + stepY * 11;
+	one.x12 = x + rand() % stepX; one.y12 = y + stepY * 12;
+	one.x13 = x + rand() % stepX; one.y13 = y + stepY * 13;
+	one.x14 = x + rand() % stepX; one.y14 = y + stepY * 14;
+	one.x15 = x + rand() % stepX; one.y15 = y + stepY * 15;
+	one.x16 = x + rand() % stepX; one.y16 = y + stepY * 16;
+	one.x17 = x + rand() % stepX; one.y17 = y + stepY * 17;
+	one.x18 = x + rand() % stepX; one.y18 = y + stepY * 18;
+	one.x19 = x + rand() % stepX; one.y19 = y + stepY * 19;
+	POINT thunder[] = {
+		{ one.x0,one.y0 },
+		{ one.x1,one.y1 },
+		{ one.x2,one.y2 },
+		{ one.x3,one.y3 },
+		{ one.x4,one.y4 },
+		{ one.x5,one.y5 },
+		{ one.x6,one.y6 },
+		{ one.x7,one.y7 },
+		{ one.x8,one.y8 },
+		{ one.x9,one.y9 },
+		{ one.x10,one.y10},
+		{ one.x11,one.y11 },
+		{ one.x12,one.y12 },
+		{ one.x13,one.y13 },
+		{ one.x14,one.y14 },
+		{ one.x15,one.y15 },
+		{ one.x16,one.y16 },
+		{ one.x17,one.y17 },
+		{ one.x18,one.y18 },
+		{ one.x19,one.y19 }
+	};
+	POINT thunder2[] = {
+		{ one.x15,one.y15 },
+		{ one.x16+  rand() % 20,one.y16 },
+		{ one.x17 + rand() % 20,one.y17 },
+		{ one.x18 + rand() % 20,one.y18 }
+	};
+	COLORREF yellow_thunder = RGB(181, 165, 95);
+	COLORREF blue_thunder = RGB(73 ,147 ,255);
+
+	int ops = rand() % 2;
+	if (ops==1) {
+		setlinecolor(yellow_thunder);
+	}
+	else {
+		setlinecolor(blue_thunder);
+	}
+	
+	polyline(thunder, 20);
+	polyline(thunder2, 4);
+	Sleep(2);
+	setlinecolor(BLACK);
+	polyline(thunder, 20);
+	polyline(thunder2, 4);
+
+}
+
 void clearAll(void)
 {
 	struct rainDrop *p, *pf;
@@ -149,7 +229,6 @@ void visitDrop(rainDrop * p) {
 
 void rain(void)
 {
-	initgraphics();
 	CreatList(&head);
 	creatRain();
 	while (stop!=0)
@@ -157,6 +236,7 @@ void rain(void)
 	    Sleep(10);
 		Traverse(head,&visitDrop);
 		Clean(&head);
+		thunder();
 	}
 	clearAll();
 }
@@ -245,11 +325,9 @@ void main()
 	//cin >> screenX;
 	//cout << "Input screenY:" << endl;
 	//cin >> screenY;
-	//cout << "Input rainDrop Number:(<300)" <<endl ;
-	//cin>>rainDropNumber;
-	//cout << "Input rainSpeed" << endl;
-	//cin >> rainSpeed;
+
 	srand(1);
+	initgraphics();
 
 	std::thread t1(KeyBoardListener);
 	std::thread t2(rain);

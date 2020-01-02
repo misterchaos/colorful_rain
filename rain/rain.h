@@ -49,6 +49,30 @@ typedef struct rainDrop
 	int del;//ÊÇ·ñ½«±»É¾³ı
 }rainDrop;
 
+typedef struct Thunder
+{
+	int x0, y0;
+	int x1, y1;
+	int x2, y2;
+	int x3, y3;
+	int x4, y4;
+	int x5, y5;
+	int x6, y6;
+	int x7, y7;
+	int x8, y8;
+	int x9, y9;
+	int x10, y10;
+	int x11, y11;
+	int x12, y12;
+	int x13, y13;
+	int x14, y14;
+	int x15, y15;
+	int x16, y16;
+	int x17, y17;
+	int x18, y18;
+	int x19, y19;
+}Thunder;
+
 enum Status { FAIL, OK };
 
 void CreatList(rainDrop** ppHead);

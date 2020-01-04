@@ -1,58 +1,55 @@
 #include "rain.h"
-int screenX=1200, screenY=800, vX = 0, vY = 10, rainSpeed=1, rainDropNumber=0;
+
+int screenX = 1200, screenY = 800, vX = 0, vY = 10, rainSpeed = 1, rainDropNumber = 5;
 volatile int stop = 1;
 rainDrop *head;
-std::mutex g_mutex;
 
-void initgraphics(void)
+void Initgraphics(void)
 {
 	initgraph(screenX, screenY);
 }
 
-COLORREF getRandomColor() {
+COLORREF GetRandomColor() {
 	return  RGB(rand()%256+1, rand() % 256 + 1, rand() % 256 + 1);
 }
 
-void recreatDrop(struct rainDrop *p)
+
+
+struct rainDrop *CreatDrop(void)
 {
+	struct rainDrop *p;
+	p = (struct rainDrop *)malloc(LEN);
 	p->startX = rand() % screenX;
 	p->startY = rand() % screenY - 30;
 	p->endY = screenY - 60 + rand() % 50;
 	p->curX = p->startX;
 	p->curY = p->startY;
-	p->rainColor = getRandomColor();
-	p->rainLineLength =(float) (rand() % 15)/20;
+	p->rainColor = GetRandomColor();
+	p->rainLineLength = (float)(rand() % 15) / 20;
 	p->status = 0;
 	p->water.x = p->startX;
 	p->water.y = p->endY;
 	p->water.r = rand() % 10;
 	p->water.curR = rand() % 2;
-	p->water.rainCircleStep = rand() % 2 + 1; 
-}
-
-struct rainDrop *creatDrop(void)
-{
-	struct rainDrop *p;
-	p = (struct rainDrop *)malloc(LEN);
-	recreatDrop(p);
+	p->water.rainCircleStep = rand() % 2 + 1;
 	p->next = NULL;
 	return (p);
 }
 
 
 
-void creatRain(void)
+void CreatRainList(void)
 {
 	struct rainDrop *p;
 	int i;
 	for (i = 0; i < rainDropNumber; i++)
 	{
-		p = creatDrop();
+		p = CreatDrop();
 		Insert(&head,p);
 	}
 }
 
-void updateRainLineData(struct rainDrop *p)
+void UpdateRainLineData(struct rainDrop *p)
 {
 	p->curX += (vX*rainSpeed);
 	p->curY += (vY*rainSpeed);
@@ -61,45 +58,45 @@ void updateRainLineData(struct rainDrop *p)
 	p->water.x = p->curX;
 }
 
-void drawRainLine(struct rainDrop *p)
+void DrawRainLine(struct rainDrop *p)
 {
 	setlinecolor(p->rainColor);
 	line(p->startX, p->startY, p->curX, p->curY);
 }
 
-void clearRainLine(struct rainDrop *p)
+void ClearRainLine(struct rainDrop *p)
 {
 	setlinecolor(BLACK);
 	line(p->startX, p->startY, p->curX, p->curY);
 }
 
-void rainDropDown(struct rainDrop *p)
+void RainDropDown(struct rainDrop *p)
 {
 	if (p->curY >= p->endY)
 	{
-	clearRainLine(p);
+	ClearRainLine(p);
 		p->status = 1;
 	}
 	else
 	{
-		clearRainLine(p);
-		updateRainLineData(p);
-		drawRainLine(p);
+		ClearRainLine(p);
+		UpdateRainLineData(p);
+		DrawRainLine(p);
 	}
 }
 
-void updateRainCircleData(struct rainDrop *p)
+void UpdateRainCircleData(struct rainDrop *p)
 {
 	p->water.curR += p->water.rainCircleStep;
 }
 
-void drawRainCircle(struct rainDrop *p)
+void DrawRainCircle(struct rainDrop *p)
 {
 	setlinecolor(p->rainColor);
 	circle(p->water.x, p->water.y, p->water.curR);
 }
 
-void clearRainCircle(struct rainDrop *p)
+void ClearRainCircle(struct rainDrop *p)
 {
 	setlinecolor(BLACK);
 	circle(p->water.x, p->water.y, p->water.curR);
@@ -107,28 +104,23 @@ void clearRainCircle(struct rainDrop *p)
 
 
 
-void fallToWater(struct rainDrop *p)
+void FallToWater(struct rainDrop *p)
 {
 	if (p->water.curR >= p->water.r)
 	{
-		clearRainCircle(p);
-		if (GetNumber(head)>rainDropNumber) {
-			p->del = 1;//下次将被删除
-		}
-		else {
-		    recreatDrop(p);
-		}
+		ClearRainCircle(p);
+		p->del = 1;
 	}
 	else
 	{
-		clearRainCircle(p);
-		updateRainCircleData(p);
-		drawRainCircle(p);
+		ClearRainCircle(p);
+		UpdateRainCircleData(p);
+		DrawRainCircle(p);
 	}
 }
 
 
-void thunder()
+void StartThunder()
 {
 
 	
@@ -206,7 +198,7 @@ void thunder()
 
 }
 
-void clearAll(void)
+void ClearAll(void)
 {
 	struct rainDrop *p, *pf;
 	p = head;
@@ -218,33 +210,36 @@ void clearAll(void)
 	}
 	closegraph();
 }
-void visitDrop(rainDrop * p) {
+void VisitDrop(rainDrop * p) {
 	if (p->status == 0) {
-		rainDropDown(p);
+		RainDropDown(p);
 	}
 	else {
-		fallToWater(p);
+		FallToWater(p);
 	}
 }
 
-void rain(void)
+void StartRain(void)
 {
 	CreatList(&head);
-	creatRain();
+	CreatRainList();
 	while (stop!=0)
 	{
 	    Sleep(10);
-		Traverse(head,&visitDrop);
-		Clean(&head);
-		thunder();
+		Traverse(head,&VisitDrop);
+		DeleteFellRainDrop(&head);
+		if (rainDropNumber>0) {
+			StartThunder();
+		}
+		AddNewRaindrop();
 	}
-	clearAll();
+	ClearAll();
 }
 
-void ChangeNumber(int number) {
-    if (GetNumber(head)<number) {
-		while (GetNumber(head) <number) {
-			rainDrop *p = creatDrop();
+void AddNewRaindrop() {
+    if (GetNumber(head)<rainDropNumber) {
+		while (GetNumber(head) < rainDropNumber) {
+			rainDrop *p = CreatDrop();
 			Insert(&head,p);
 		}
 	}
@@ -300,14 +295,13 @@ void KeyBoardListener()
 			case PLUS:
 			//	cout << "plus" << endl;
 				if (rainDropNumber < 400) {
-					rainDropNumber++;
+					rainDropNumber+=5;
 				}
-				ChangeNumber(rainDropNumber);
 				break;
 			case SUB:
 			//	cout << "sub" << endl;
 				if (rainDropNumber>0) {
-				    rainDropNumber--;
+				    rainDropNumber-=5;
 				}
 				break;
 			default:
@@ -317,20 +311,94 @@ void KeyBoardListener()
 
 	}
 }
+int InputNumber()
+{
 
+	int n = 0;
+	int num = 0; //存放输入数字
+	int status = 0; //标志状态
+	do
+	{
+		status = TRUE;
+		n = scanf_s("%d", &num, 4);
+		if (getchar() != '\n') {
+			for (; getchar() != '\n';);
+			printf("  输入不合法,请重新输入：");
+			status = FALSE;
+		}
+	} while (status == FALSE);
+	return num;
+}
+
+Status CheckParameter() {
+	cout << "                                  " << endl;
+	cout << "  [正在校验运行参数]               " << endl;
+	cout << "                                  " << endl;
+	cout << "  [校验结果]：" ;
+	if (screenX<800|| screenX>1980|| screenY<480|| screenY>1280) {
+		printf("  屏幕参数不合理\n");
+		return FAIL;
+	}
+	if (rainDropNumber <0|| rainDropNumber >500) {
+		printf("  雨滴数量不合理\n");
+	}
+
+	return OK;
+}
 
 void main()
 {
-	//cout << "Input screenX:" << endl;
-	//cin >> screenX;
-	//cout << "Input screenY:" << endl;
-	//cin >> screenY;
 
-	srand(1);
-	initgraphics();
+	while (stop!=0) {
+		system("cls");
+		cout << "=====================================" << endl;
+		cout << "   欢迎使用[池塘夜降彩色雨]模拟系统   " << endl;
+		cout << "                                   " << endl;
+		cout << "                                   " << endl;
+		cout << "  [开发者]：黄钰朝                  " << endl;
+		cout << "  [联系邮箱]：kobe524348@gmail.com   " << endl;
+		cout << "                                   " << endl;
+		cout << "                                   " << endl;
+		cout << "  [键盘操作说明]                     " << endl;
+		cout << "  方向上键--------------加快雨滴下落速度     " << endl;
+		cout << "  方向下键--------------减慢雨滴下落速度     " << endl;
+		cout << "  方向左键--------------加大向左风力         " << endl;
+		cout << "  方向右键--------------加大向右风力         " << endl;
+		cout << "  加号键----------------增加雨点数量           " << endl;
+		cout << "  减号键----------------减少雨点数量           " << endl;
+		cout << "  回车和ESC键-----------退出程序          " << endl;
+		cout << "                                   " << endl;
+		cout << "                                   " << endl;
+		cout << "  [请选择程序运行模式]               " << endl;
+		cout << "  [1]--------------默认设置         " << endl;
+		cout << "  [2]--------------手动设置         " << endl;
+		cout << "                                   " << endl;
+		cout << "  请输入[1或者2]：";
+	   int x = InputNumber();
+	   if (x==2) {
+		   cout << "  请输入窗口横向长度[800-1980之间]：" ;
+		   screenX=InputNumber();
+		   cout << "  请输入窗口竖向长度[480-1280之间]：" ;
+		   screenY=InputNumber();
+		   cout << "  请输入初始雨滴数量[0-500之间]：";
+		   rainDropNumber = InputNumber();
+	   }
+	   else if(x!=1) {
+		   system("pause");
+		   continue;
+	   }
+	   if (CheckParameter()==FAIL) {
+		   system("pause");
+		   continue;
+	   }
+	   srand(1);
+	   Initgraphics();
 
-	std::thread t1(KeyBoardListener);
-	std::thread t2(rain);
-	t2.join();
-	_getch();
+	   std::thread t1(KeyBoardListener);
+	   std::thread t2(StartRain);
+	   t2.join();
+
+	}
+
+	
 }

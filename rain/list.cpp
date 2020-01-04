@@ -46,7 +46,7 @@ int Delete(rainDrop** ppHead, rainDrop* pN) { //É¾³ý
 
 
 
-int Clean(rainDrop** ppHead) { //É¾³ý
+int DeleteFellRainDrop(rainDrop** ppHead) { //É¾³ý
 	if (ppHead == NULL ) {
 		return -1;
 	}

@@ -351,6 +351,7 @@ void main()
 
 	while (stop!=0) {
 		system("cls");
+		screenX = 1200, screenY = 800, vX = 0, vY = 10, rainSpeed = 1, rainDropNumber = 5;
 		cout << "=====================================" << endl;
 		cout << "   欢迎使用[池塘夜降彩色雨]模拟系统   " << endl;
 		cout << "                                   " << endl;

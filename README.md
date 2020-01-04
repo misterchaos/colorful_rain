@@ -64,11 +64,11 @@
 
 #### 3.图形界面演示
 
-![](C:\Users\Misterchaos\Documents\C语言开发环境\Visual Studio Workspace\rain\image\menu.jpg)
+![](\image\menu.jpg)
 
 ​                      														图1-1：菜单页面
 
-![](C:\Users\Misterchaos\Documents\C语言开发环境\Visual Studio Workspace\rain\image\rain.jpg)
+![](\image\rain.jpg)
 
 ​																			 图1-2：下雨页面				
 
@@ -88,7 +88,7 @@ IDE：Visual Studio Community 2017
 
 #### 2.程序流程图
 
-![](C:\Users\Misterchaos\Documents\C语言开发环境\Visual Studio Workspace\rain\image\structure.png)
+![](\image\structure.png)
 
 ## :page_facing_up:心得体会
 
